@@ -1,0 +1,238 @@
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "MeoCaoBoiPremium"
+ScreenGui.Parent = CoreGui
+ScreenGui.ResetOnSpawn = false
+
+local function MakeRainbow(obj, property)
+    task.spawn(function()
+        while obj and obj.Parent do
+            obj[property] = Color3.fromHSV(tick() % 5 / 5, 0.8, 1)
+            task.wait()
+        end
+    end)
+end
+
+task.wait(1.67)
+
+local LoadingFrame = Instance.new("Frame")
+LoadingFrame.Size = UDim2.new(0, 350, 0, 140)
+LoadingFrame.Position = UDim2.new(0.5, -175, 0.5, -70)
+LoadingFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+LoadingFrame.BorderSizePixel = 0
+LoadingFrame.Parent = ScreenGui
+
+local LoadingCorner = Instance.new("UICorner", LoadingFrame)
+LoadingCorner.CornerRadius = UDim.new(0, 15)
+
+local LoadingTitle = Instance.new("TextLabel")
+LoadingTitle.Size = UDim2.new(1, 0, 0, 40)
+LoadingTitle.Text = "MEOCAOBOI TỔNG HỢP"
+LoadingTitle.Font = Enum.Font.GothamBold
+LoadingTitle.TextSize = 22
+LoadingTitle.BackgroundTransparency = 1
+LoadingTitle.Parent = LoadingFrame
+MakeRainbow(LoadingTitle, "TextColor3")
+
+local BarBG = Instance.new("Frame")
+BarBG.Size = UDim2.new(0.85, 0, 0, 6)
+BarBG.Position = UDim2.new(0.075, 0, 0.55, 0)
+BarBG.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+BarBG.Parent = LoadingFrame
+
+local BarFill = Instance.new("Frame")
+BarFill.Size = UDim2.new(0, 0, 1, 0)
+BarFill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BarFill.Parent = BarBG
+MakeRainbow(BarFill, "BackgroundColor3")
+
+local PercentText = Instance.new("TextLabel")
+PercentText.Size = UDim2.new(0, 50, 0, 20)
+PercentText.Position = UDim2.new(0.85, 0, 0.4, 0)
+PercentText.Text = "0%"
+PercentText.Font = Enum.Font.GothamMedium
+PercentText.TextColor3 = Color3.fromRGB(255, 255, 255)
+PercentText.BackgroundTransparency = 1
+PercentText.Parent = LoadingFrame
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, 0, 0, 30)
+StatusLabel.Position = UDim2.new(0, 0, 0.75, 0)
+StatusLabel.Text = "Khởi động..."
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.TextSize = 13
+StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Parent = LoadingFrame
+
+local statusMessages = {
+    "đang tải dữ liệu...", "đang tải logo...", "đang tải hệ thống...",
+    "đang tải giao diện người dùng", "đang tải Emotes", "đang tải bom2dev",
+    "đang tải fly", "đang tải tàng hình", "đang tải soclo",
+    "đang tải wall hop", "đang tải IY", "đang tải aimbot",
+    "kiểm tra tệp tin...", "xác thực người dùng...", "tối ưu hóa script...",
+    "hoàn tất thiết lập...", "đã xong"
+}
+
+task.spawn(function()
+    local totalTime = 3
+    local startTick = tick()
+    local msgIndex = 1
+    
+    while tick() - startTick < totalTime do
+        local elapsed = tick() - startTick
+        local progress = elapsed / totalTime
+        
+        BarFill.Size = UDim2.new(progress, 0, 1, 0)
+        PercentText.Text = math.floor(progress * 100) .. "%"
+        
+        local currentMsgIndex = math.floor(elapsed / 0.15) + 1
+        if statusMessages[currentMsgIndex] and currentMsgIndex ~= msgIndex then
+            msgIndex = currentMsgIndex
+            StatusLabel.Text = statusMessages[msgIndex]
+        end
+        
+        task.wait()
+    end
+    
+    BarFill.Size = UDim2.new(1, 0, 1, 0)
+    PercentText.Text = "100%"
+    StatusLabel.Text = "đã xong"
+    
+    task.wait(0.3)
+    
+    local fadeInfo = TweenInfo.new(0.4, Enum.EasingStyle.Linear)
+    local objectsToFade = {LoadingFrame, LoadingTitle, BarBG, BarFill, PercentText, StatusLabel}
+    for _, obj in pairs(objectsToFade) do
+        if obj:IsA("Frame") then
+            TweenService:Create(obj, fadeInfo, {BackgroundTransparency = 1}):Play()
+        elseif obj:IsA("TextLabel") then
+            TweenService:Create(obj, fadeInfo, {TextTransparency = 1}):Play()
+        end
+    end
+    
+    task.wait(0.4)
+    LoadingFrame:Destroy()
+    if _G.MainFrame then _G.MainFrame.Visible = true end
+end)
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 400, 0, 380)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -190)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.BorderSizePixel = 0
+MainFrame.Visible = false
+MainFrame.Parent = ScreenGui
+_G.MainFrame = MainFrame
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 45)
+Title.Text = "MEOCAOBOI TỔNG HỢP"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 20
+Title.BackgroundTransparency = 1
+Title.Parent = MainFrame
+MakeRainbow(Title, "TextColor3")
+
+local HideBtn = Instance.new("TextButton")
+HideBtn.Size = UDim2.new(0, 35, 0, 35)
+HideBtn.Position = UDim2.new(1, -40, 0, 5)
+HideBtn.Text = "-"
+HideBtn.Font = Enum.Font.GothamBold
+HideBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+HideBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+HideBtn.Parent = MainFrame
+Instance.new("UICorner", HideBtn)
+
+local LogoBtn = Instance.new("TextButton")
+LogoBtn.Size = UDim2.new(0, 70, 0, 70)
+LogoBtn.Position = UDim2.new(0, 20, 0.5, -35)
+LogoBtn.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+LogoBtn.Text = ""
+LogoBtn.Visible = false
+LogoBtn.Parent = ScreenGui
+Instance.new("UICorner", LogoBtn).CornerRadius = UDim.new(1, 0)
+
+local LogoStroke = Instance.new("UIStroke", LogoBtn)
+LogoStroke.Thickness = 2.5
+MakeRainbow(LogoStroke, "Color")
+
+local LogoText1 = Instance.new("TextLabel")
+LogoText1.Size = UDim2.new(1, 0, 0.5, 0)
+LogoText1.Position = UDim2.new(0, 0, 0.18, 0)
+LogoText1.Text = "MEOCAOBOI"
+LogoText1.Font = Enum.Font.GothamBold
+LogoText1.TextSize = 10
+LogoText1.TextColor3 = Color3.fromRGB(255, 255, 255)
+LogoText1.BackgroundTransparency = 1
+LogoText1.Parent = LogoBtn
+
+local LogoText2 = Instance.new("TextLabel")
+LogoText2.Size = UDim2.new(1, 0, 0.3, 0)
+LogoText2.Position = UDim2.new(0, 0, 0.55, 0)
+LogoText2.Text = "TỔNG HỢP"
+LogoText2.Font = Enum.Font.GothamMedium
+LogoText2.TextSize = 8
+LogoText2.TextColor3 = Color3.fromRGB(200, 200, 200)
+LogoText2.BackgroundTransparency = 1
+LogoText2.Parent = LogoBtn
+
+local Scroll = Instance.new("ScrollingFrame")
+Scroll.Size = UDim2.new(1, -20, 1, -70)
+Scroll.Position = UDim2.new(0, 10, 0, 60)
+Scroll.BackgroundTransparency = 1
+Scroll.CanvasSize = UDim2.new(0, 0, 1.4, 0)
+Scroll.ScrollBarThickness = 3
+Scroll.Parent = MainFrame
+Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 10)
+
+local function CreateBtn(name, script_str)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.9, 0, 0, 45)
+    btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    btn.Text = name
+    btn.Font = Enum.Font.Gotham
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 14
+    btn.Parent = Scroll
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    btn.MouseButton1Click:Connect(function() loadstring(script_str)() end)
+end
+
+CreateBtn("Emotes", [[loadstring(game:HttpGet("https://raw.githubusercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua"))()]])
+CreateBtn("bom2dev", [[loadstring(game:HttpGet("https://pastefy.app/KpN6cMdj/raw"))()]])
+CreateBtn("Fly bởi MEOCAOBOI", [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Meo-Cao-Boi-Hub/fly_tu_che/main/fly_tu_che"))()]])
+CreateBtn("tàng hình", [[loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invisible-script-20557"))()]])
+CreateBtn("soclo", [[loadstring(game:HttpGet("https://raw.githubusercontent.com/anuragaming1/anura/refs/heads/main/soclo.lua"))()]])
+CreateBtn("wall hop", [[loadstring(game:HttpGet("https://raw.githubusercontent.com/ScpGuest666/Random-Roblox-script/refs/heads/main/Roblox%20WallHop%20V4%20script"))()]])
+CreateBtn("Infinite Yield", [[loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()]])
+CreateBtn("aim bot", [[loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Aimbot-Mobile-34677"))()]])
+
+HideBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false; LogoBtn.Visible = true end)
+LogoBtn.MouseButton1Click:Connect(function() MainFrame.Visible = true; LogoBtn.Visible = false end)
+
+local function MakeDraggable(frame, handle)
+    local dragging, dragInput, dragStart, startPos
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true; dragStart = input.Position; startPos = frame.Position
+        end
+    end)
+    handle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end end)
+end
+
+MakeDraggable(MainFrame, Title)
+MakeDraggable(LogoBtn, LogoBtn)
